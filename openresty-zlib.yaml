@@ -1,0 +1,4 @@
+version_control: github
+src_repo: openresty/openresty
+tag_prefix: "^v"
+seperator: "."

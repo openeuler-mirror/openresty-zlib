@@ -1,0 +1,38 @@
+From 8d777d20ac3d82434c3f1cbd9cdee94c4de8f966 Mon Sep 17 00:00:00 2001
+From: fu_changjie <fu_changjie@qq.com>
+Date: Fri, 11 Dec 2020 10:28:08 +0800
+Subject: [PATCH] copy-dir.sh
+
+---
+ copy-dir.sh | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100755 copy-dir.sh
+
+diff --git a/copy-dir.sh b/copy-dir.sh
+new file mode 100755
+index 0000000..b5520d5
+--- /dev/null
++++ b/copy-dir.sh
+@@ -0,0 +1,19 @@
++dirname=$(basename `pwd`)
++time=$(date +%s)
++
++cd ..
++
++if [[ -f 'asan' || -d 'asan' ]]; then 
++	mv asan asan-${time}
++fi
++
++if [[ -f 'debug' || -d 'debug' ]]; then
++        mv debug debug-${time}
++fi
++
++cp -a ${dirname} asan
++cp -a ${dirname} debug
++
++mv asan debug ${dirname}
++
++cd -
+-- 
+2.27.0
+
