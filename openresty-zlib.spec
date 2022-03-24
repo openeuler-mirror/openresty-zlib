@@ -1,6 +1,6 @@
 Name:               openresty-zlib
 Version:            1.2.11
-Release:            3%{?dist}
+Release:            4
 Summary:            The zlib compression library for OpenResty
 
 Group:              System Environment/Libraries
@@ -36,7 +36,7 @@ Provides C header and static library for OpenResty's zlib library.
 
 
 %package asan
-Release:            13%{?dist}
+Release:            14
 Summary:            Clang AddressSanitizer version for the zlib compression library for OpenResty
 Group:              System Environment/Libraries
 BuildRequires:      libtool, clang, compiler-rt
@@ -47,7 +47,7 @@ The zlib compression library for use by Openresty ONLY. This is the clang Addres
 
 
 %package asan-devel
-Release:            13%{?dist}
+Release:            14
 Summary:            Development files for OpenResty's zlib library
 Group:              Development/Libraries
 Requires:           openresty-zlib-asan = %{version}-%{release}
@@ -122,5 +122,8 @@ rm -rf %{buildroot}
 %{zlib_prefix_asan}/include/zconf.h
 
 %changelog
+* Thu Mar 24 2022 wulei <wulei80@huawei.com> - 1.2.11-4
+- Delete {?dist}
+
 * Wed Jul 21 2021 imjoey <majunjie@apache.org> - 1.2.11-3
 - Package init
