@@ -1,6 +1,6 @@
 Name:               openresty-zlib
 Version:            1.2.11
-Release:            3%{?dist}
+Release:            4%{?dist}
 Summary:            The zlib compression library for OpenResty
 
 Group:              System Environment/Libraries
@@ -14,6 +14,7 @@ Patch99:            0099-copy-dir.sh.patch
 BuildRoot:          %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:      libtool
+BuildRequires:      libatomic
 
 AutoReqProv:        no
 
@@ -63,7 +64,11 @@ Provides C header and static library for OpenResty's clang AddressSanitizer vers
 %build
 bash ./copy-dir.sh
 ./configure --prefix=%{zlib_prefix}
-make %{?_smp_mflags} CFLAGS='-O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3' \
+%if "%toolchain" == "clang"
+	make %{?_smp_mflags} CFLAGS='-O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3 -latomic' \
+%else
+	make %{?_smp_mflags} CFLAGS='-O3 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3' \
+%endif
     SFLAGS='-O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3'
 
 cd asan 
@@ -72,7 +77,11 @@ export ASAN_OPTIONS=detect_leaks=0
 CC="clang -fsanitize=address" ./configure --prefix=%{zlib_prefix_asan}
 
 make %{?_smp_mflags} CC="clang -fsanitize=address" \
-    CFLAGS='-O1 -fno-omit-frame-pointer -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3' \
+%if "%toolchain" == "clang"
+	  CFLAGS='-O1 -fno-omit-frame-pointer -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3 -latomic' \
+%else
+	  CFLAGS='-O1 -fno-omit-frame-pointer -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3' \
+%endif
     SFLAGS='-O1 -fno-omit-frame-pointer -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -g3' \
     LDSHARED='clang -fsanitize=address -shared -Wl,-soname,libz.so.1,--version-script,zlib.map'
 
@@ -122,5 +131,8 @@ rm -rf %{buildroot}
 %{zlib_prefix_asan}/include/zconf.h
 
 %changelog
+* Sun Jul 16 2023 yoo <sunyuechi@iscas.ac.cn> - 1.2.11-4
+- fix clang build error
+
 * Wed Jul 21 2021 imjoey <majunjie@apache.org> - 1.2.11-3
 - Package init
